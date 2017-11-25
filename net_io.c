@@ -29,6 +29,7 @@
 //
 
 #include "dump1090.h"
+#include <errno.h>
 //
 // ============================= Networking =============================
 //
@@ -694,6 +695,35 @@ char *aircraftsToJson(int *len) {
     *len = p-buf;
     return buf;
 }
+
+//
+//=========================================================================
+//
+// Return a description of planes in json. No metric conversion
+//
+static int sendBuffer(int fd, char* buffer, int length) {
+    int offset=0;
+    int l;
+    while(length>0) {
+
+#ifndef _WIN32
+        l = write(fd, buffer+offset, length>1024?1024:length);
+#else
+        l = send(fd, buffer+offset, length, 0);
+#endif
+        if (l<0) {
+            if (errno!=EAGAIN) {
+                return -1;
+            }
+        }
+        else {
+            length-=l;
+            offset+=l;
+        }
+    }
+    return 0;
+}
+
 //
 //=========================================================================
 //
@@ -747,7 +777,7 @@ int handleHTTPRequest(struct client *c, char *p) {
     }
     
     if (strlen(url) < 2) {
-        snprintf(getFile, sizeof getFile, "%s/gmap.html", HTMLPATH); // Default file
+        snprintf(getFile, sizeof getFile, "%s/index.html", HTMLPATH); // Default file
     } else {
         snprintf(getFile, sizeof getFile, "%s/%s", HTMLPATH, url);
     }
@@ -826,13 +856,8 @@ int handleHTTPRequest(struct client *c, char *p) {
     }
 
     // Send header and content.
-#ifndef _WIN32
-    if ( (write(c->fd, hdr, hdrlen) != hdrlen) 
-      || (write(c->fd, content, clen) != clen) ) {
-#else
-    if ( (send(c->fd, hdr, hdrlen, 0) != hdrlen) 
-      || (send(c->fd, content, clen, 0) != clen) ) {
-#endif
+    if ( (sendBuffer(c->fd, hdr, hdrlen) != 0)
+      || (sendBuffer(c->fd, content, clen) != 0) ) {
         free(content);
         return 1;
     }
