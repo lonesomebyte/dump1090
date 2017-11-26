@@ -50,6 +50,14 @@ $(document).ready(function() {
                         plane.Click(selectHandler);
                     }   
                     planes[update.hex].Update(update, home);
+                    //Sort the thumbs based on distance and inbound
+                    $("#planethumbs").children().sort(function(a,b){
+                        var plane_a = $(a).data('plane');
+                        var plane_b = $(b).data('plane');
+                        var dist_a = plane_a.distance===undefined?99999:(plane_a.inbound!==true?plane_a.distance+5000:plane_a.distance);
+                        var dist_b = plane_b.distance===undefined?99999:(plane_b.inbound!==true?plane_b.distance+5000:plane_b.distance);
+                        return dist_a-dist_b;
+                    }).appendTo("#planethumbs");
                 }   
             }
             for (var hex in planes) {

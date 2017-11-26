@@ -50,10 +50,11 @@ function Plane(map) {
                     "<span class='plane-longitude' id='lon'>---</span>"+
                 "</div>"+
                 "<div>"+
-                    "<img id='distanceicon' src='assets/images/distance.png' class='icon'><span class='plane-distance' id='distance'>---</span> km"+
+                    "<img id='distanceicon' src='assets/images/distance.png' class='icon'><span class='plane-distance' id='distance'>---</span> kmi&nbsp&nbsp"+
+                    "<img src='assets/images/squawk.png' class='icon'><span class='plane-squawk' id='squawk'>---</span>"+
                 "</div>"+
             "</div>"+
-        "</div>");
+        "</div>").data("plane", this);
 }
 
 Plane.prototype.Select = function(selected) {
@@ -146,7 +147,6 @@ Plane.prototype.Update = function(data, home) {
                 }
         }
         if (home) {
-
             var rad = function(x) {
                 return x * Math.PI / 180;
             };
