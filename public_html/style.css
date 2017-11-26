@@ -1,0 +1,129 @@
+#map {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		right: 0px;
+		bottom: 0px;
+		outline: none;
+}
+
+#planethumbs {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 200px;
+	bottom: 16px;
+	background: rgba(255,255,255,0.7);
+	z-index: 100000;
+	overflow-y: scroll;
+	font-size: 13px;
+        font-family: arial;
+}
+
+.plane-entry
+{
+  	transition:2s;
+	border: 1px solid #aaa;
+	box-shadow: 3px 3px 5px #888;
+	margin-bottom: 5px;
+	background: #fff;
+	height: 120px;
+	overflow: hidden;
+}
+
+.plane-entry.lost
+{
+	background:#eee;
+	opacity:0.3;
+}
+
+.plane-entry.gone
+{
+	height: 0px;
+	margin-bottom: -2px;
+	opacity:0;
+}
+
+.plane-entry.selected
+{
+	transition: 0s;
+	background: #eef;
+}
+
+.plane-entry .icon
+{
+    height: 13px;
+    margin-right: 3px;
+}
+
+.plane-icao
+{
+	color: #888;
+  float: right;
+}
+
+.plane-flight
+{
+	font-size: 14px;
+	font-style: italic;	
+}
+
+.plane-registration
+{
+  font-size: 15px;
+  font-weight: bold;  
+}
+
+.plane-planetype
+{
+	font-style: italic;
+	font-weight: bold;
+}
+
+.plane-led
+{
+	font-weight: bolder;
+	margin-right: 5px;
+}
+
+.disabledtext
+{
+	color:#ddd;
+}
+
+.plane-fieldcontainer
+{
+	padding: 3px;
+	margin-left: 30px;
+}
+
+.plane-image
+{
+	transition-duration: 2s;
+  	position: relative;	
+	top: 100px;
+}
+
+.plane-height
+{
+	transition-duration: 2s;
+  	width:4px;
+	height:0px;
+	background-color:#ddd;
+	display: inline-block;
+	position: relative;
+	top: 96px;
+}
+
+.plane-heightcontainer
+{
+	transition-duration: 2s;
+	height: 95px;
+	vertical-align: top;
+	text-align: center;
+	opacity: 0;
+	margin-left: 2px;
+	float: left;
+}
+
+
