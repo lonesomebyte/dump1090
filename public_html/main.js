@@ -23,24 +23,28 @@ $(document).ready(function() {
     setInterval(function() {
         $.getJSON('/dump1090/data.json', function(updates) {
             var reportedPlanes = [];
-            for (var updateIdx=0; updateIdx<updates.length; updateIdx++)
-            {
+            for (var updateIdx=0; updateIdx<updates.length; updateIdx++) {
                 var update = updates[updateIdx];
                 reportedPlanes.push(update.hex);
-                if (update.hex)
-                {
-                    if (!(update.hex in planes))
-                    {
+                if (update.hex) {
+                    if (!(update.hex in planes)) {
                         var plane = new Plane(map);
                         planes[update.hex] = plane;
                         $("#planethumbs").append(plane.GetThumb());
                         var selectHandler = function(evt) {
-                            if (selectedPlane)
-                            {
+                            if (selectedPlane) {
                                 selectedPlane.Select(false);
                             }   
                             selectedPlane = this;
                             this.Select(true);
+                            // Make sure this thumb is visible, if not scroll
+                            var thumb = selectedPlane.GetThumb();
+                            var listview = thumb.parent();
+                            var offset = thumb.position().top;
+                            if ((offset<0) ||
+                                (offset+thumb.height()>listview.height())) {
+                                    listview.scrollTop(listview.scrollTop()+offset);
+                            }
                         }.bind(plane);
                         plane.GetThumb().click(selectHandler);
                         plane.Click(selectHandler);

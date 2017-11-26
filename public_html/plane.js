@@ -21,6 +21,9 @@ function Plane(map) {
     this.path=[];
     this.pathPoly = undefined;
     this.planeLost = false;
+    this.lastLat = null;
+    this.lastLon = null;
+    this.inbound = undefined;
     this.thumb = $(
         "<div class='plane-entry'>"+
             "<div class='plane-heightcontainer'>"+
@@ -35,19 +38,19 @@ function Plane(map) {
                 "<div><span class='plane-flight' id='flight'>---</span></div>"+
                 "<div><span class='plane-planetype' id='planeType'>---</span></div>"+
                 "<div>"+
-                    "<img src='assets/images/altitude.png' class='icon'><span class='plane-altitude' id='altitude'>---</span> ft"+
+                    "<img src='assets/images/altitude.png' class='icon'><span class='plane-altitude' id='altitude'>---</span> ft&nbsp&nbsp"+
+                    "<span class='plane-verticalspeed' id='vert_rate'>---</span> ft/min"+
                 "</div>"+
                 "<div>"+
                     "<img src='assets/images/speed.png' class='icon'><span class='plane-velocity' id='speed'>---</span> kts&nbsp&nbsp"+
-                    "<span class='plane-verticalspeed' id='vert_rate'>---</span> ft/min"+
+                    "<img src='assets/images/heading.png' class='icon'><span class='plane-heading' id='track'>---</span>"+
                 "</div>"+
                 "<div>"+
                     "<img src='assets/images/position.png' class='icon'><span class='plane-latitude' id='lat'>---</span> - "+
                     "<span class='plane-longitude' id='lon'>---</span>"+
                 "</div>"+
                 "<div>"+
-                    "<img src='assets/images/heading.png' class='icon'><span class='plane-heading' id='track'>---</span>&nbsp&nbsp"+
-                    "<img src='assets/images/distance.png' class='icon'><span class='plane-distance' id='distance'>---</span> km"+
+                    "<img id='distanceicon' src='assets/images/distance.png' class='icon'><span class='plane-distance' id='distance'>---</span> km"+
                 "</div>"+
             "</div>"+
         "</div>");
@@ -55,7 +58,7 @@ function Plane(map) {
 
 Plane.prototype.Select = function(selected) {
     if (this.marker) {
-        this.marker.setIcon(selected?planeSelectedIcon:planeIcon);	
+        this.marker.setIcon(selected?planeSelectedIcon:(this.planeLost?planeLostIcon:planeIcon));	
     }
 
     if (selected) {
@@ -124,7 +127,9 @@ Plane.prototype.Update = function(data, home) {
     }
 
 
-    if (data.validposition==1) {
+    if (data.validposition==1 && (this.lastLat!=data.lat || this.lastLon!=data.lon)) {
+        this.lastLat = data.lat;
+        this.lastLon = data.lon;
         var position = new L.LatLng(parseFloat(data.lat), parseFloat(data.lon));
         this.path.push(position);
         if (this.pathPoly) {
@@ -135,7 +140,7 @@ Plane.prototype.Update = function(data, home) {
             this.marker.setLatLng(position)
         }
         else {
-            this.marker = L.marker(position, {icon: planeIcon, rotationAngle:parseInt(this.track)}).addTo(this.map)
+            this.marker = L.marker(position, {icon: this.planeLost?planeLostIcon:planeIcon, rotationAngle:parseInt(this.track)}).addTo(this.map)
                 if (this.clickCb) {
                     this.marker.on('click', this.clickCb);
                 }
@@ -156,6 +161,14 @@ Plane.prototype.Update = function(data, home) {
             var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             var d = (R * c)/1000;
             this.thumb.find("#distance").text(d.toFixed(2));
+            if (this.distance) {
+                var inbound = d<this.distance;
+                if (inbound!==this.inbound) {
+                    this.thumb.find("#distanceicon").attr('src', 'assets/images/'+(inbound?"distancein.png":"distanceout.png"));
+                }
+                this.inbound=inbound;
+            }
+            this.distance=d;
         }
 
     }	
