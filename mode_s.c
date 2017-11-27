@@ -2035,6 +2035,29 @@ int cprNFunction(double lat, int fflag) {
 double cprDlonFunction(double lat, int fflag, int surface) {
     return (surface ? 90.0 : 360.0) / cprNFunction(lat, fflag);
 }
+
+void addToPath(struct aircraft *a)
+{
+    // We only record latlon at most once every 10 seconds.
+    // Check whether the last vector was added more than 10s ago.
+    if ((a->lastPathVector==NULL) || (a->timestampLatLon-a->lastPathVector->timestamp>100e6)) {
+        struct pathVector* p = (struct pathVector*)malloc(sizeof(*a->path));
+        memset(p, 0, sizeof(*p));
+        p->lat=a->lat;
+        p->lon=a->lon;
+        p->timestamp = a->timestampLatLon;
+        p->altitude = a->altitude; 
+        p->speed = a->speed;
+        if (a->path==NULL) {
+            a->path = a->lastPathVector = p;
+        }
+        else {
+            a->lastPathVector->next = p;
+            a->lastPathVector = p;
+        }
+    } 
+}
+
 //
 //=========================================================================
 //
@@ -2112,6 +2135,8 @@ int decodeCPR(struct aircraft *a, int fflag, int surface) {
     a->seenLatLon      = a->seen;
     a->timestampLatLon = a->timestamp;
     a->bFlags         |= (MODES_ACFLAGS_LATLON_VALID | MODES_ACFLAGS_LATLON_REL_OK);
+
+    addToPath(a);
 
     return 0;
 }
@@ -2194,6 +2219,9 @@ int decodeCPRrelative(struct aircraft *a, int fflag, int surface) {
     a->seenLatLon      = a->seen;
     a->timestampLatLon = a->timestamp;
     a->bFlags         |= (MODES_ACFLAGS_LATLON_VALID | MODES_ACFLAGS_LATLON_REL_OK);
+
+    addToPath(a);
+
     return (0);
 }
 //

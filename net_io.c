@@ -634,6 +634,47 @@ int decodeHexMessage(struct client *c, char *hex) {
 //
 //=========================================================================
 //
+// Return a description of the path of the plane.
+//
+char *trackToJson(char* hex, int *len) {
+    struct aircraft *a = interactiveFindAircraft(strtol(hex, NULL, 16));
+    int buflen=1024;
+    char *buf = (char *) malloc(buflen); 
+    char *p = buf;
+
+    if (a==NULL) {
+        strcpy(buf, "[]");
+        *len=strlen(buf);
+    } else {
+        struct pathVector* vector = a->path;
+        strcpy(p, "[");
+        *len = strlen(p);
+        p+=strlen(p); 
+        
+        while (vector!=NULL) {
+            snprintf(p, buflen-*len, "{\"lat\":\"%f\",\"lon\":\"%f\"},", vector->lat, vector->lon);
+            *len += strlen(p);
+            p += strlen(p);
+            if (buflen-*len<256) {
+                buflen += 1024;
+                buf = (char *) realloc(buf,buflen);
+                p = buf+*len;
+            }
+            vector = vector->next;
+        } 
+        if (p[-1]==',') {
+            p--;
+            *len-=1;
+        }
+        strcpy(p, "]");
+        *len += strlen(p);
+    }
+    return buf;
+}
+
+//
+//=========================================================================
+//
 // Return a description of planes in json. No metric conversion
 //
 char *aircraftsToJson(int *len) {
@@ -789,6 +830,9 @@ int handleHTTPRequest(struct client *c, char *p) {
         statuscode = 200;
         content = aircraftsToJson(&clen);
         //snprintf(ctype, sizeof ctype, MODES_CONTENT_TYPE_JSON);
+    } else if (strstr(url, "/track.json?hex=")) {
+        statuscode = 200;
+        content = trackToJson(url+16,&clen);
     } else {
         struct stat sbuf;
         int fd = -1;

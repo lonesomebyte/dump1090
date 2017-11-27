@@ -543,6 +543,13 @@ void interactiveRemoveStaleAircrafts(void) {
 
         while(a) {
             if ((now - a->seen) > Modes.interactive_delete_ttl) {
+                // Remove first all path vectors
+                while (a->path) {
+                    struct pathVector* pVector;
+                    pVector = a->path->next;
+                    free(a->path);
+                    a->path = pVector;
+                }
                 // Remove the element from the linked list, with care
                 // if we are removing the first element
                 if (!prev) {

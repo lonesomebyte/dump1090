@@ -18,7 +18,7 @@ function Plane(map) {
     this.track = "0";
     this.marker = undefined;
     this.pendingUpdate = {};
-    this.path=[];
+    this.path = undefined;
     this.pathPoly = undefined;
     this.planeLost = false;
     this.lastLat = null;
@@ -50,7 +50,7 @@ function Plane(map) {
                     "<span class='plane-longitude' id='lon'>---</span>"+
                 "</div>"+
                 "<div>"+
-                    "<img id='distanceicon' src='assets/images/distance.png' class='icon'><span class='plane-distance' id='distance'>---</span> kmi&nbsp&nbsp"+
+                    "<img id='distanceicon' src='assets/images/distance.png' class='icon'><span class='plane-distance' id='distance'>---</span> km&nbsp&nbsp"+
                     "<img src='assets/images/squawk.png' class='icon'><span class='plane-squawk' id='squawk'>---</span>"+
                 "</div>"+
             "</div>"+
@@ -64,7 +64,21 @@ Plane.prototype.Select = function(selected) {
 
     if (selected) {
         this.thumb.addClass('selected');
-        if (!this.pathPoly) {
+        if (this.path===undefined) {
+            // It's the first time this plane is selected.
+            // First retrieve the historical path data from the server
+            $.getJSON('/track.json?hex='+this.hex, function(path) {
+                this.path=[];
+                for (var i=0; i<path.length; i++) {
+                    this.path.push(new L.LatLng(parseFloat(path[i].lat), parseFloat(path[i].lon)));
+                }
+                // Check if this plane is still selected
+                if (this.selected) {
+                    this.pathPoly = L.polyline(this.path, {color: 'red'}).addTo(this.map);
+                }
+            }.bind(this));
+        }
+        else if (!this.pathPoly) {
             this.pathPoly = L.polyline(this.path, {color: 'red'}).addTo(this.map);
         }
 
@@ -76,6 +90,7 @@ Plane.prototype.Select = function(selected) {
             this.pathPoly = undefined;
         }
     }
+    this.selected=selected;
 }
 
 Plane.prototype.Click = function(cb) {
@@ -116,6 +131,7 @@ Plane.prototype.Update = function(data, home) {
 
 
     if (!this.staticInfoSet) {
+        this.hex = data.hex;
         var uHex = data.hex.toUpperCase();
         if (planesInfo && uHex in planesInfo) {
             var planeInfo = planesInfo[uHex];
@@ -132,7 +148,9 @@ Plane.prototype.Update = function(data, home) {
         this.lastLat = data.lat;
         this.lastLon = data.lon;
         var position = new L.LatLng(parseFloat(data.lat), parseFloat(data.lon));
-        this.path.push(position);
+        if (this.path!==undefined) {
+            this.path.push(position);
+        }
         if (this.pathPoly) {
             this.pathPoly.addLatLng(position);
         }

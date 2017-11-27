@@ -195,6 +195,15 @@ struct client {
     char   buf[MODES_CLIENT_BUF_SIZE+1]; // Read buffer
 };
 
+struct pathVector {
+    double              lat;
+    double              lon;
+    int                 altitude;
+    int                 speed;
+    uint64_t            timestamp;
+    struct pathVector*  next;
+};
+
 // Structure used to describe an aircraft in iteractive mode
 struct aircraft {
     uint32_t      addr;           // ICAO address
@@ -224,6 +233,8 @@ struct aircraft {
     uint64_t      even_cprtime;
     double        lat, lon;       // Coordinated obtained from CPR encoded data
     int           bFlags;         // Flags related to valid fields in this structure
+    struct pathVector* path;
+    struct pathVector* lastPathVector;
     struct aircraft *next;        // Next aircraft in our linked list
 };
 
