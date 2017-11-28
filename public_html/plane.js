@@ -133,18 +133,17 @@ Plane.prototype.Update = function(data, home) {
     if (!this.staticInfoSet) {
         this.hex = data.hex;
         var uHex = data.hex.toUpperCase();
-        if (planesInfo && uHex in planesInfo) {
-            var planeInfo = planesInfo[uHex];
-            this.thumb.find("#registration").text(planeInfo['registration']);
-
-            var planeType = planeInfo['planeType'];	
-            this.thumb.find("#planeType").text(planeType in planeTypes?planeTypes[planeType]:planeType);	
+        if (data.reg) {
+            this.thumb.find("#registration").text(data.reg);
+        }
+        if (data.icao) {
+            this.thumb.find("#planeType").text(data.icao in planeTypes?planeTypes[data.icao]:data.icao);	
         }
         this.staticInfoSet = true;
     }
 
 
-    if (data.validposition==1 && (this.lastLat!=data.lat || this.lastLon!=data.lon)) {
+    if (data.lat && (this.lastLat!=data.lat || this.lastLon!=data.lon)) {
         this.lastLat = data.lat;
         this.lastLon = data.lon;
         var position = new L.LatLng(parseFloat(data.lat), parseFloat(data.lon));
@@ -190,7 +189,7 @@ Plane.prototype.Update = function(data, home) {
         }
 
     }	
-    if (data.validtrack==1) {
+    if (data.track) {
         if (this.marker) {
             this.marker.setRotationAngle(90+parseInt(data.track));
         }

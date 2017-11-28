@@ -235,6 +235,10 @@ struct aircraft {
     int           bFlags;         // Flags related to valid fields in this structure
     struct pathVector* path;
     struct pathVector* lastPathVector;
+#ifdef BASESTATION
+    char          icaoType[5];
+    char*         registration;
+#endif
     struct aircraft *next;        // Next aircraft in our linked list
 };
 

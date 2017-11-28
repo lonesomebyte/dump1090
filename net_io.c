@@ -687,31 +687,45 @@ char *aircraftsToJson(int *len) {
     l = snprintf(p,buflen,"[\n");
     p += l; buflen -= l;
     while(a) {
-        int position = 0;
-        int track = 0;
 
         if (a->modeACflags & MODEAC_MSG_FLAG) { // skip any fudged ICAO records Mode A/C
             a = a->next;
             continue;
         }
 
+        // No metric conversion
+        l = snprintf(p,buflen,
+            "{\"hex\":\"%06x\", \"squawk\":\"%04x\", \"flight\":\"%s\", "
+            "\"altitude\":%d,  \"vert_rate\":%d,"
+            "\"speed\":%d, \"messages\":%ld, \"seen\":%d",
+            a->addr, a->modeA, a->flight, a->altitude, a->vert_rate, 
+            a->speed, a->messages, (int)(now - a->seen));
+        p += l; buflen -= l;
+
         if (a->bFlags & MODES_ACFLAGS_LATLON_VALID) {
-            position = 1;
+            l = snprintf(p,buflen, ", \"lat\":%f, \"lon\":%f", a->lat, a->lon); 
+            p += l; buflen -= l;
         }
         
         if (a->bFlags & MODES_ACFLAGS_HEADING_VALID) {
-            track = 1;
+            l = snprintf(p,buflen, ", \"track\":%d",a->track);
+            p += l; buflen -= l;
         }
-        
-        // No metric conversion
-        l = snprintf(p,buflen,
-            "{\"hex\":\"%06x\", \"squawk\":\"%04x\", \"flight\":\"%s\", \"lat\":%f, "
-            "\"lon\":%f, \"validposition\":%d, \"altitude\":%d,  \"vert_rate\":%d,\"track\":%d, \"validtrack\":%d,"
-            "\"speed\":%d, \"messages\":%ld, \"seen\":%d},\n",
-            a->addr, a->modeA, a->flight, a->lat, a->lon, position, a->altitude, a->vert_rate, a->track, track,
-            a->speed, a->messages, (int)(now - a->seen));
+#ifdef BASESTATION
+        if (strlen(a->icaoType)>0) {
+            l = snprintf(p,buflen, ", \"icao\":\"%s\"",a->icaoType);
+            p += l; buflen -= l;
+        }
+
+        if (a->registration) {
+            l = snprintf(p,buflen, ", \"reg\":\"%s\"",a->registration);
+            p += l; buflen -= l;
+        }
+#endif
+        l = snprintf(p,buflen, "},\n");
         p += l; buflen -= l;
-        
+               
+ 
         //Resize if needed
         if (buflen < 256) {
             int used = p-buf;

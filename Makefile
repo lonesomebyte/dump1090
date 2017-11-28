@@ -11,7 +11,9 @@ EXTRACFLAGS=-DHTMLPATH=\"$(SHAREDIR)\"
 endif
 
 CFLAGS=-O2 -g -Wall -W `pkg-config --cflags librtlsdr`
-LIBS=`pkg-config --libs librtlsdr` -lpthread -lm
+CFLAGS+=-DBASESTATION
+LIBS=`pkg-config --libs librtlsdr` -lpthread -lm 
+LIBS+=-lsqlite3
 CC=gcc
 
 

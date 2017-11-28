@@ -29,6 +29,11 @@
 //
 
 #include "dump1090.h"
+
+#ifdef BASESTATION
+#include <sqlite3.h>
+#endif
+
 //
 // ============================= Utility functions ==========================
 //
@@ -122,6 +127,36 @@ struct stDF *interactiveFindDF(uint32_t addr) {
     }
     return (NULL);
 }
+
+#ifdef BASESTATION
+int setBasestationInfo(void *ctxt, int argc, char **argv, 
+                    char **azColName) {
+    
+    struct aircraft *a = (struct aircraft*)ctxt;
+
+    for (int i = 0; i < argc; i++) {
+        //printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+        if (argv[i]==NULL) {
+            argv[i]="";
+        }
+        if (strcmp(azColName[i],"ICAOTypeCode")==0) {
+            strncpy(a->icaoType, argv[i], sizeof(a->icaoType)-1);
+        }
+        else if (strcmp(azColName[i], "Registration")==0) {
+            int len = strlen(argv[i]);
+            if (len>32) {
+                len=32;
+            }
+            a->registration = (char*)malloc(len+1);
+            strncpy(a->registration, argv[i], len);
+            a->registration[len]='\0';
+        }
+    }
+    
+    return 0;
+}
+#endif
+
 //
 //========================= Interactive mode ===============================
 //
@@ -153,6 +188,36 @@ struct aircraft *interactiveCreateAircraft(struct modesMessage *mm) {
             mm->bFlags  |= MODES_ACFLAGS_ALTITUDE_VALID;
         }
     }
+
+#ifdef BASESTATION
+    {
+        sqlite3 *db;
+        char *err_msg = 0;
+
+        int rc = sqlite3_open("basestation.sqb", &db);
+        
+        if (rc != SQLITE_OK) {
+            
+            fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+            sqlite3_close(db);
+        }
+        if (rc == SQLITE_OK) {
+            char *s = "SELECT Registration,ICAOTypeCode FROM Aircraft WHERE ModeS='";
+            char *sql = malloc(strlen(s)+10); // max 8 chars for ModeS + "'" + "\0"
+            snprintf(sql,strlen(s)+10,"%s%X'",s,a->addr);
+            rc = sqlite3_exec(db, sql, setBasestationInfo, (void*)a, &err_msg);
+            free(sql);
+        }
+        if (rc != SQLITE_OK ) {
+            fprintf(stderr, "Failed to select data\n");
+            fprintf(stderr, "SQL error: %s\n", err_msg);
+
+            sqlite3_free(err_msg);
+            sqlite3_close(db);
+        } 
+    }    
+#endif
+
     return (a);
 }
 //
@@ -435,14 +500,19 @@ void interactiveShowData(void) {
 #endif
 
     if (Modes.interactive_rtl1090 == 0) {
+#ifdef BASESTATION
+        printf (
+"Hex     Mode  Sqwk  Icao  Reg     Flight   Alt    Spd  Hdg    Lat      Long   Sig  Msgs   Ti%c\n", progress);
+#else
         printf (
 "Hex     Mode  Sqwk  Flight   Alt    Spd  Hdg    Lat      Long   Sig  Msgs   Ti%c\n", progress);
+#endif
     } else {
         printf (
 "Hex    Flight   Alt      V/S GS  TT  SSR  G*456^ Msgs    Seen %c\n", progress);
     }
     printf(
-"-------------------------------------------------------------------------------\n");
+"---------------------------------------------------------------------------------------------\n");
 
     while(a && (count < Modes.interactive_rows)) {
 
@@ -495,6 +565,10 @@ void interactiveShowData(void) {
                     unsigned int signalAverage = (pSig[0] + pSig[1] + pSig[2] + pSig[3] + 
                                                   pSig[4] + pSig[5] + pSig[6] + pSig[7] + 3) >> 3; 
 
+#ifdef BASESTATION
+                    char strReg[7];
+#endif
+
                     if ((flags & MODEAC_MSG_FLAG) == 0) {
                         strMode[0] = 'S';
                     } else if (flags & MODEAC_MSG_MODEA_ONLY) {
@@ -513,10 +587,21 @@ void interactiveShowData(void) {
                     } else if (a->bFlags & MODES_ACFLAGS_ALTITUDE_VALID) {
                         snprintf(strFl, 6, "%5d", altitude);
                     }
-
+#ifdef BASESTATION
+                    if (a->registration) {
+                        strncpy(strReg, a->registration, sizeof(strReg)-1);
+                        strReg[sizeof(strReg)-1]='\0';
+                    } else {
+                        strReg[0]='\0';
+                    }
+                    printf("%06X  %-4s  %-4s  %-4s  %-6s  %-8s %5s  %3s  %3s  %7s %8s  %3d %5d   %2d\n",
+                    a->addr, strMode, strSquawk, a->icaoType, strReg, a->flight, strFl, strGs, strTt,
+                    strLat, strLon, signalAverage, msgs, (int)(now - a->seen));
+#else
                     printf("%06X  %-4s  %-4s  %-8s %5s  %3s  %3s  %7s %8s  %3d %5d   %2d\n",
                     a->addr, strMode, strSquawk, a->flight, strFl, strGs, strTt,
                     strLat, strLon, signalAverage, msgs, (int)(now - a->seen));
+#endif
                 }
                 count++;
             }
@@ -550,6 +635,11 @@ void interactiveRemoveStaleAircrafts(void) {
                     free(a->path);
                     a->path = pVector;
                 }
+#ifdef BASESTATION
+                if (a->registration) {
+                    free(a->registration);
+                }
+#endif
                 // Remove the element from the linked list, with care
                 // if we are removing the first element
                 if (!prev) {
