@@ -1,7 +1,19 @@
 Dump1090 README
 ===
 
+This fork of Dump 1090 is optimized for usage by (contrail-) spotters.
+Compared to Malcolm Robb's version this has following additional
+features:
+* New web interface.
+* Web list view sorts planes on distance to spotter's location, approaching
+  planes first.
+* Flight path recording by dump 1090. Web clients have immediate access
+  to the full path recorded so far.
+ 
+
+Original documentation:
 Dump 1090 is a Mode S decoder specifically designed for RTLSDR devices.
+
 
 The main features are:
 

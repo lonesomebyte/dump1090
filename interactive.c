@@ -209,8 +209,8 @@ struct aircraft *interactiveCreateAircraft(struct modesMessage *mm) {
             free(sql);
         }
         if (rc != SQLITE_OK ) {
-            fprintf(stderr, "Failed to select data\n");
-            fprintf(stderr, "SQL error: %s\n", err_msg);
+            //fprintf(stderr, "Failed to select data\n");
+            //fprintf(stderr, "SQL error: %s\n", err_msg);
 
             sqlite3_free(err_msg);
             sqlite3_close(db);

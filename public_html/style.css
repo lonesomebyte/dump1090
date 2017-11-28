@@ -1,10 +1,28 @@
 #map {
-		position: absolute;
-		top: 0px;
-		left: 0px;
-		right: 0px;
-		bottom: 0px;
-		outline: none;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        bottom: 20px;
+        outline: none;
+}
+
+#infobar {
+        position: absolute;
+        height: 20px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+        background-color: #000;
+        color: #ccc;
+        font-family: courier;
+        font-size: 12px;
+        padding-left: 50px;
+}
+
+#infobar > * {
+        display: inline-block;
+        padding-top:2px;
 }
 
 #planethumbs {
@@ -12,7 +30,7 @@
 	top: 0px;
 	right: 0px;
 	width: 200px;
-	bottom: 16px;
+	bottom: 36px;
 	background: rgba(255,255,255,0.7);
 	z-index: 100000;
 	overflow-y: scroll;

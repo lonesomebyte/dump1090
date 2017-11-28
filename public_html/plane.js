@@ -100,7 +100,7 @@ Plane.prototype.Click = function(cb) {
     this.clickCb = cb;
 }
 
-Plane.prototype.Update = function(data, home) {
+Plane.prototype.Update = function(data) {
     if (!this.flashTask && data.seen==0) {
         this.thumb.find(".plane-led").css('color','#f00');
         this.flashTask = setTimeout(function() {
@@ -163,7 +163,7 @@ Plane.prototype.Update = function(data, home) {
                     this.marker.on('click', this.clickCb);
                 }
         }
-        if (home) {
+        if (window.home) {
             var rad = function(x) {
                 return x * Math.PI / 180;
             };
