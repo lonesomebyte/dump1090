@@ -237,7 +237,7 @@ struct aircraft {
     struct pathVector* lastPathVector;
 #ifdef BASESTATION
     char          icaoType[5];
-    char*         registration;
+    char          registration[7];
 #endif
     struct aircraft *next;        // Next aircraft in our linked list
 };

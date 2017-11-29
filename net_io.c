@@ -717,7 +717,7 @@ char *aircraftsToJson(int *len) {
             p += l; buflen -= l;
         }
 
-        if (a->registration) {
+        if (strlen(a->registration)>0) {
             l = snprintf(p,buflen, ", \"reg\":\"%s\"",a->registration);
             p += l; buflen -= l;
         }

@@ -143,13 +143,7 @@ int setBasestationInfo(void *ctxt, int argc, char **argv,
             strncpy(a->icaoType, argv[i], sizeof(a->icaoType)-1);
         }
         else if (strcmp(azColName[i], "Registration")==0) {
-            int len = strlen(argv[i]);
-            if (len>32) {
-                len=32;
-            }
-            a->registration = (char*)malloc(len+1);
-            strncpy(a->registration, argv[i], len);
-            a->registration[len]='\0';
+            strncpy(a->registration, argv[i], sizeof(a->registration)-1);
         }
     }
     
@@ -565,10 +559,6 @@ void interactiveShowData(void) {
                     unsigned int signalAverage = (pSig[0] + pSig[1] + pSig[2] + pSig[3] + 
                                                   pSig[4] + pSig[5] + pSig[6] + pSig[7] + 3) >> 3; 
 
-#ifdef BASESTATION
-                    char strReg[7];
-#endif
-
                     if ((flags & MODEAC_MSG_FLAG) == 0) {
                         strMode[0] = 'S';
                     } else if (flags & MODEAC_MSG_MODEA_ONLY) {
@@ -588,14 +578,8 @@ void interactiveShowData(void) {
                         snprintf(strFl, 6, "%5d", altitude);
                     }
 #ifdef BASESTATION
-                    if (a->registration) {
-                        strncpy(strReg, a->registration, sizeof(strReg)-1);
-                        strReg[sizeof(strReg)-1]='\0';
-                    } else {
-                        strReg[0]='\0';
-                    }
                     printf("%06X  %-4s  %-4s  %-4s  %-6s  %-8s %5s  %3s  %3s  %7s %8s  %3d %5d   %2d\n",
-                    a->addr, strMode, strSquawk, a->icaoType, strReg, a->flight, strFl, strGs, strTt,
+                    a->addr, strMode, strSquawk, a->icaoType, a->registration, a->flight, strFl, strGs, strTt,
                     strLat, strLon, signalAverage, msgs, (int)(now - a->seen));
 #else
                     printf("%06X  %-4s  %-4s  %-8s %5s  %3s  %3s  %7s %8s  %3d %5d   %2d\n",
@@ -635,11 +619,6 @@ void interactiveRemoveStaleAircrafts(void) {
                     free(a->path);
                     a->path = pVector;
                 }
-#ifdef BASESTATION
-                if (a->registration) {
-                    free(a->registration);
-                }
-#endif
                 // Remove the element from the linked list, with care
                 // if we are removing the first element
                 if (!prev) {
