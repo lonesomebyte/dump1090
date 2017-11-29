@@ -10,12 +10,7 @@ features:
 * Flight path recording by dump 1090. Web clients have immediate access
   to the full path recorded so far.
  
-
-Original documentation:
-Dump 1090 is a Mode S decoder specifically designed for RTLSDR devices.
-
-
-The main features are:
+The main features are still supported:
 
 * Robust decoding of weak messages, with mode1090 many users observed
   improved range compared to other popular decoders.
@@ -38,6 +33,9 @@ Installation
 ---
 
 Type "make".
+Dependencies:
+- libsqlite-dev: to read from the basestation file. A define BASESTATION 
+  can be disabled (see Makefile) to remove the feature and this dependency
 
 Normal usage
 ---
@@ -60,7 +58,7 @@ with your browser to http://localhost:8080 to see live traffic:
 
     ./dump1090 --interactive --net
 
-In iteractive mode it is possible to have a less information dense but more
+In interactive mode it is possible to have a less information dense but more
 "arcade style" output, where the screen is refreshed every second displaying
 all the recently seen aircrafts with some additional information such as
 altitude and flight number, extracted from the received Mode S packets.
