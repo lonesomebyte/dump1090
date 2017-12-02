@@ -697,9 +697,9 @@ char *aircraftsToJson(int *len) {
         l = snprintf(p,buflen,
             "{\"hex\":\"%06x\", \"squawk\":\"%04x\", \"flight\":\"%s\", "
             "\"altitude\":%d,  \"vert_rate\":%d,"
-            "\"speed\":%d, \"messages\":%ld, \"seen\":%d",
+            "\"speed\":%d, \"messages\":%ld, \"seen\":%d, \"alarm\":\"%d\"",
             a->addr, a->modeA, a->flight, a->altitude, a->vert_rate, 
-            a->speed, a->messages, (int)(now - a->seen));
+            a->speed, a->messages, (int)(now - a->seen), a->alarm);
         p += l; buflen -= l;
 
         if (a->bFlags & MODES_ACFLAGS_LATLON_VALID) {

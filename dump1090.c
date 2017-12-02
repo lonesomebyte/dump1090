@@ -29,6 +29,7 @@
 //
 #include "coaa.h"
 #include "dump1090.h"
+#include "settings.h"
 //
 // ============================= Utility functions ==========================
 //
@@ -796,6 +797,8 @@ int main(int argc, char **argv) {
     // Setup for SIGWINCH for handling lines
     if (Modes.interactive) {signal(SIGWINCH, sigWinchCallback);}
 #endif
+
+    settingsInit();
 
     // Initialization
     modesInit();

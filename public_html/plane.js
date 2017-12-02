@@ -142,6 +142,16 @@ Plane.prototype.Update = function(data) {
         this.staticInfoSet = true;
     }
 
+    if (data.alarm!==this.alarm) {
+        this.alarm=data.alarm;
+        if (this.alarm!=="0") {
+            this.thumb.addClass('alarm');
+            var audio = new Audio("assets/sounds/notification.mp3");
+            audio.play();
+        } else {
+            this.thumb.removeClass('alarm');
+        }
+    }
 
     if (data.lat && (this.lastLat!=data.lat || this.lastLon!=data.lon)) {
         this.lastLat = data.lat;

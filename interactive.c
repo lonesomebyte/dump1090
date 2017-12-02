@@ -29,7 +29,7 @@
 //
 
 #include "dump1090.h"
-
+#include "settings.h"
 #ifdef BASESTATION
 #include <sqlite3.h>
 #endif
@@ -459,6 +459,8 @@ struct aircraft *interactiveReceiveData(struct modesMessage *mm) {
     if ((Modes.bEnableDFLogging) && (mm->msgtype < 32)) {
         interactiveCreateDF(a,mm);
     }
+    
+    a->alarm=settingsCheckAlarms(a);
 
     return (a);
 }
@@ -473,6 +475,7 @@ void interactiveShowData(void) {
     int count = 0;
     char progress;
     char spinner[4] = "|/-\\";
+    int alarmIdx = time(NULL)%2;
 
     // Refresh screen every (MODES_INTERACTIVE_REFRESH_TIME) miliseconde
     if ((mstime() - Modes.interactive_last_update) < MODES_INTERACTIVE_REFRESH_TIME)
@@ -496,17 +499,17 @@ void interactiveShowData(void) {
     if (Modes.interactive_rtl1090 == 0) {
 #ifdef BASESTATION
         printf (
-"Hex     Mode  Sqwk  Icao  Reg     Flight   Alt    Spd  Hdg    Lat      Long   Sig  Msgs   Ti%c\n", progress);
+"  Hex     Mode  Sqwk  Icao  Reg     Flight   Alt    Spd  Hdg    Lat      Long   Sig  Msgs   Ti%c\n", progress);
 #else
         printf (
-"Hex     Mode  Sqwk  Flight   Alt    Spd  Hdg    Lat      Long   Sig  Msgs   Ti%c\n", progress);
+"  Hex     Mode  Sqwk  Flight   Alt    Spd  Hdg    Lat      Long   Sig  Msgs   Ti%c\n", progress);
 #endif
     } else {
         printf (
 "Hex    Flight   Alt      V/S GS  TT  SSR  G*456^ Msgs    Seen %c\n", progress);
     }
     printf(
-"---------------------------------------------------------------------------------------------\n");
+"-----------------------------------------------------------------------------------------------\n");
 
     while(a && (count < Modes.interactive_rows)) {
 
@@ -578,12 +581,12 @@ void interactiveShowData(void) {
                         snprintf(strFl, 6, "%5d", altitude);
                     }
 #ifdef BASESTATION
-                    printf("%06X  %-4s  %-4s  %-4s  %-6s  %-8s %5s  %3s  %3s  %7s %8s  %3d %5d   %2d\n",
-                    a->addr, strMode, strSquawk, a->icaoType, a->registration, a->flight, strFl, strGs, strTt,
+                    printf("%c %06X  %-4s  %-4s  %-4s  %-6s  %-8s %5s  %3s  %3s  %7s %8s  %3d %5d   %2d\n",
+                    a->alarm && alarmIdx?'*':' ', a->addr, strMode, strSquawk, a->icaoType, a->registration, a->flight, strFl, strGs, strTt,
                     strLat, strLon, signalAverage, msgs, (int)(now - a->seen));
 #else
-                    printf("%06X  %-4s  %-4s  %-8s %5s  %3s  %3s  %7s %8s  %3d %5d   %2d\n",
-                    a->addr, strMode, strSquawk, a->flight, strFl, strGs, strTt,
+                    printf("%c %06X  %-4s  %-4s  %-8s %5s  %3s  %3s  %7s %8s  %3d %5d   %2d\n",
+                    a->alarm && alarmIdx?'*':' ', a->addr, strMode, strSquawk, a->flight, strFl, strGs, strTt,
                     strLat, strLon, signalAverage, msgs, (int)(now - a->seen));
 #endif
                 }

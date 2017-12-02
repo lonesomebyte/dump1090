@@ -47,11 +47,11 @@
 	background: #fff;
 	height: 120px;
 	overflow: hidden;
+        border-left: 10px solid rgba(255,255,255,0);
 }
 
 .plane-entry.lost
 {
-	background:#eee;
 	opacity:0.3;
 }
 
@@ -60,6 +60,11 @@
 	height: 0px;
 	margin-bottom: -2px;
 	opacity:0;
+}
+
+.plane-entry.alarm
+{
+    border-left: 10px solid #f00;
 }
 
 .plane-entry.selected

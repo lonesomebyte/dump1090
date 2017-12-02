@@ -239,6 +239,7 @@ struct aircraft {
     char          icaoType[5];
     char          registration[7];
 #endif
+    char          alarm;
     struct aircraft *next;        // Next aircraft in our linked list
 };
 
