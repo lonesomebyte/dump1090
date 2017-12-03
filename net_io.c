@@ -803,6 +803,7 @@ int handleHTTPRequest(struct client *c, char *p) {
     char ctype[48];
     char getFile[1024];
     char *ext;
+    int cache=1;
 
     if (Modes.debug & MODES_DEBUG_NET)
         printf("\nHTTP request: %s\n", c->buf);
@@ -843,10 +844,12 @@ int handleHTTPRequest(struct client *c, char *p) {
     if (strstr(url, "/data.json")) {
         statuscode = 200;
         content = aircraftsToJson(&clen);
+        cache = 0;
         //snprintf(ctype, sizeof ctype, MODES_CONTENT_TYPE_JSON);
     } else if (strstr(url, "/track.json?hex=")) {
         statuscode = 200;
         content = trackToJson(url+16,&clen);
+        cache = 0;
     } else {
         struct stat sbuf;
         int fd = -1;
@@ -901,13 +904,14 @@ int handleHTTPRequest(struct client *c, char *p) {
         "Content-Type: %s\r\n"
         "Connection: %s\r\n"
         "Content-Length: %d\r\n"
-        "Cache-Control: no-cache, must-revalidate\r\n"
+        "Cache-Control: %s\r\n"
         "Expires: Sat, 26 Jul 1997 05:00:00 GMT\r\n"
         "\r\n",
         statuscode,
         ctype,
         keepalive ? "keep-alive" : "close",
-        clen);
+        clen,
+        cache?"public, max-age=31536000":"no-cache, must-revalidate");
 
     if (Modes.debug & MODES_DEBUG_NET) {
         printf("HTTP Reply header:\n%s", hdr);

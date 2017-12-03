@@ -6,5 +6,4 @@
 #                 contains the given string
 squawk 7700
 squawk 7600
-icao a31
-icao a32
+icao a38

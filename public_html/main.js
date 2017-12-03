@@ -74,7 +74,7 @@ $(document).ready(function() {
                 reportedPlanes.push(update.hex);
                 if (update.hex) {
                     if (!(update.hex in planes)) {
-                        var plane = new Plane(map);
+                        var plane = new Plane(map, update);
                         planes[update.hex] = plane;
                         $("#planethumbs").append(plane.GetThumb());
                         var selectHandler = function(evt) {
