@@ -30,7 +30,9 @@ static struct settingsHandle* openSettings( char* filename) {
     handle->filesize = ftell(file);
     fseek(file, 0L, SEEK_SET);
     handle->content = malloc(handle->filesize+1);
-    fread(handle->content, handle->filesize, 1, file);
+    if (fread(handle->content, handle->filesize, 1, file)!=1) {
+        return NULL;
+    }
     fclose(file);
     handle->content[handle->filesize]='\n';
     return handle;
