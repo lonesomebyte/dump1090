@@ -200,7 +200,7 @@ struct pathVector {
     double              lon;
     int                 altitude;
     int                 speed;
-    uint64_t            timestamp;
+    time_t              time;
     struct pathVector*  next;
 };
 
@@ -238,6 +238,9 @@ struct aircraft {
 #ifdef BASESTATION
     char          icaoType[5];
     char          registration[7];
+#endif
+#ifdef LOGGING
+    int           logId;
 #endif
     char          alarm;
     struct aircraft *next;        // Next aircraft in our linked list

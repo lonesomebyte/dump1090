@@ -30,8 +30,13 @@
 
 #include "dump1090.h"
 #include "settings.h"
+
 #ifdef BASESTATION
 #include <sqlite3.h>
+#endif
+
+#ifdef LOGGING
+#include "database.h"
 #endif
 
 //
@@ -211,7 +216,9 @@ struct aircraft *interactiveCreateAircraft(struct modesMessage *mm) {
         } 
     }    
 #endif
-
+#ifdef LOGGING
+    a->logId = Database_Log(a);
+#endif
     return (a);
 }
 //
@@ -615,6 +622,10 @@ void interactiveRemoveStaleAircrafts(void) {
 
         while(a) {
             if ((now - a->seen) > Modes.interactive_delete_ttl) {
+#ifdef LOGGING
+                // Log the path
+                Database_LogPath(a);
+#endif
                 // Remove first all path vectors
                 while (a->path) {
                     struct pathVector* pVector;
@@ -635,6 +646,7 @@ void interactiveRemoveStaleAircrafts(void) {
         }
     }
 }
+
 //
 //=========================================================================
 //

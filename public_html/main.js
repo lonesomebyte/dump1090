@@ -56,8 +56,8 @@ $(document).ready(function() {
             homeMarker.setLatLng(evt.latlng); 
             $("#homeCoordinates").text(evt.latlng.lat+" - "+evt.latlng.lng);
             setHome=false;
-            createCookie("homeLat", evt.latlng.lat);
-            createCookie("homeLon", evt.latlng.lng);
+            createCookie("homeLat", evt.latlng.lat, 365);
+            createCookie("homeLon", evt.latlng.lng, 365);
             window.home = L.latLng(evt.latlng.lat, evt.latlng.lng);
         }
     });

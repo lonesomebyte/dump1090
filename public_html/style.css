@@ -21,8 +21,8 @@
 }
 
 #infobar > * {
-        display: inline-block;
-        padding-top:2px;
+    display: inline-block;
+    padding-top:2px;
 }
 
 #planethumbs {
@@ -70,7 +70,7 @@
 .plane-entry.selected
 {
 	transition: 0s;
-	background: #eef;
+	background: #ccf;
 }
 
 .plane-entry .icon

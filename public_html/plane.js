@@ -30,7 +30,7 @@ function Plane(map, data) {
     this.icon = "default";
     if (this.icao) {
         for (var type in icons) {
-            if (icons[type].indexOf(this.icao.toUpperCase())>0) {
+            if (icons[type].indexOf(this.icao.toUpperCase())>=0) {
                 this.icon=type;
                 break;
             }

@@ -2038,14 +2038,17 @@ double cprDlonFunction(double lat, int fflag, int surface) {
 
 void addToPath(struct aircraft *a)
 {
+    time_t now;
+
     // We only record latlon at most once every 10 seconds.
     // Check whether the last vector was added more than 10s ago.
-    if ((a->lastPathVector==NULL) || (a->timestampLatLon-a->lastPathVector->timestamp>100e6)) {
+    time(&now);
+    if ((a->lastPathVector==NULL) || (now-a->lastPathVector->time>=10)) {
         struct pathVector* p = (struct pathVector*)malloc(sizeof(*a->path));
         memset(p, 0, sizeof(*p));
         p->lat=a->lat;
         p->lon=a->lon;
-        p->timestamp = a->timestampLatLon;
+        p->time=now;
         p->altitude = a->altitude; 
         p->speed = a->speed;
         if (a->path==NULL) {
