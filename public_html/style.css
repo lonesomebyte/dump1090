@@ -1,23 +1,23 @@
 #map {
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        right: 0px;
-        bottom: 20px;
-        outline: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 220px;
+    outline: none;
 }
 
 #infobar {
-        position: absolute;
-        height: 20px;
-        left: 0px;
-        right: 0px;
-        bottom: 0px;
-        background-color: #000;
-        color: #ccc;
-        font-family: courier;
-        font-size: 12px;
-        padding-left: 50px;
+    position: absolute;
+    height: 20px;
+    left: 0px;
+    right: 0px;
+    bottom: 200px;
+    background-color: #000;
+    color: #ccc;
+    font-family: courier;
+    font-size: 12px;
+    padding-left: 50px;
 }
 
 #infobar > * {
@@ -25,41 +25,108 @@
     padding-top:2px;
 }
 
+#statistics {
+    position: absolute;
+    height: 200px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background: #fff;
+    font-family: helvetica neue;
+    font-size:13px;
+}
+
+#statistics > .pane {
+    padding: 10px;
+    display: inline-block;
+    height: 80%;
+    margin: 5px;
+    overflow: scroll;
+    border-right: 1px solid #ddd;
+    color: #888;
+}
+
+#statistics table {
+    border-spacing: 0px;
+}
+
+#statistics table td:first-child {
+    text-align: right;
+    padding-right: 5px;
+}
+
+#statistics table th {
+    text-align: left;
+}
+
+#statistics table th.big,
+#statistics .title {
+    font-size: 24px;
+    color: #000;
+    border-bottom: 1px dotted #7878e2;
+    font-weight: normal;
+}
+
+#statistics table th.big {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#statistics table.centered td {
+    text-align: center;
+}
+
+#statistics .title {
+    font-size: 24px;
+    color: #000;
+    display: inline-block;
+    margin-bottom: 4px;
+}
+
+#statistics .number {
+    font-size: 13px;
+    color: #7878e2;
+}
+
+#statistics .number.big {
+    font-size: 24px;
+}
+
 #planethumbs {
-	position: absolute;
-	top: 0px;
-	right: 0px;
-	width: 200px;
-	bottom: 36px;
-	background: rgba(255,255,255,0.7);
-	z-index: 100000;
-	overflow-y: scroll;
-	font-size: 13px;
-        font-family: arial;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 200px;
+    bottom: 236px;
+    background: rgba(255,255,255,0.7);
+    z-index: 100000;
+    overflow-y: scroll;
+    font-size: 13px;
+    font-family: arial;
 }
 
 .plane-entry
 {
-  	transition:2s;
-	border: 1px solid #aaa;
-	box-shadow: 3px 3px 5px #888;
-	margin-bottom: 5px;
-	background: #fff;
-	height: 120px;
-	overflow: hidden;
-        border-left: 10px solid rgba(255,255,255,0);
+    transition:2s;
+    border: 1px solid #aaa;
+    box-shadow: 3px 3px 5px #888;
+    margin-bottom: 5px;
+    background: #fff;
+    height: 120px;
+    overflow: hidden;
+    border-left: 10px solid rgba(255,255,255,0);
 }
 
 .plane-entry.lost
 {
-	opacity:0.3;
+    background: #d8d8d8;
 }
 
 .plane-entry.gone
 {
-	height: 0px;
-	margin-bottom: -2px;
-	opacity:0;
+    height: 0px;
+    margin-bottom: -2px;
+    opacity:0;
 }
 
 .plane-entry.alarm
@@ -69,8 +136,8 @@
 
 .plane-entry.selected
 {
-	transition: 0s;
-	background: #ccf;
+    transition: 0s;
+    background: #ccf;
 }
 
 .plane-entry .icon
@@ -81,14 +148,14 @@
 
 .plane-icao
 {
-	color: #888;
+    color: #888;
   float: right;
 }
 
 .plane-flight
 {
-	font-size: 14px;
-	font-style: italic;	
+    font-size: 14px;
+    font-style: italic;    
 }
 
 .plane-registration
@@ -99,54 +166,54 @@
 
 .plane-planetype
 {
-	font-style: italic;
-	font-weight: bold;
+    font-style: italic;
+    font-weight: bold;
 }
 
 .plane-led
 {
-	font-weight: bolder;
-	margin-right: 5px;
+    font-weight: bolder;
+    margin-right: 5px;
 }
 
 .disabledtext
 {
-	color:#ddd;
+    color:#ddd;
 }
 
 .plane-fieldcontainer
 {
-	padding: 3px;
-	margin-left: 30px;
+    padding: 3px;
+    margin-left: 30px;
 }
 
 .plane-image
 {
-	transition-duration: 2s;
-  	position: relative;	
-	top: 100px;
+    transition-duration: 2s;
+    position: relative;    
+    top: 100px;
 }
 
 .plane-height
 {
-	transition-duration: 2s;
-  	width:4px;
-	height:0px;
-	background-color:#ddd;
-	display: inline-block;
-	position: relative;
-	top: 96px;
+    transition-duration: 2s;
+    width:4px;
+    height:0px;
+    background-color:#ddd;
+    display: inline-block;
+    position: relative;
+    top: 96px;
 }
 
 .plane-heightcontainer
 {
-	transition-duration: 2s;
-	height: 95px;
-	vertical-align: top;
-	text-align: center;
-	opacity: 0;
-	margin-left: 2px;
-	float: left;
+    transition-duration: 2s;
+    height: 95px;
+    vertical-align: top;
+    text-align: center;
+    opacity: 0;
+    margin-left: 2px;
+    float: left;
 }
 
 

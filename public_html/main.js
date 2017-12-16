@@ -1,3 +1,4 @@
+var planes = {}
 function createCookie(name, value, days) {
     if (days) {
         var date = new Date();
@@ -21,7 +22,6 @@ function readCookie(name) {
 }
 
 $(document).ready(function() {
-    var planes = {}
     var homeLat = readCookie("homeLat");
     var homeLon = readCookie("homeLon");
     var selectedPlane = undefined;
@@ -66,6 +66,7 @@ $(document).ready(function() {
         setHome=true;
     });
 
+    showStatistics();
     setInterval(function() {
         $.getJSON('/dump1090/data.json', function(updates) {
             var reportedPlanes = [];
@@ -97,14 +98,15 @@ $(document).ready(function() {
                     }   
                     planes[update.hex].Update(update, home);
                     //Sort the thumbs based on distance and inbound
-                    $("#planethumbs").children().sort(function(a,b){
-                        var plane_a = $(a).data('plane');
-                        var plane_b = $(b).data('plane');
-                        var dist_a = plane_a.distance===undefined?99999:(plane_a.inbound!==true?plane_a.distance+5000:plane_a.distance);
-                        var dist_b = plane_b.distance===undefined?99999:(plane_b.inbound!==true?plane_b.distance+5000:plane_b.distance);
-                        return dist_a-dist_b;
-                    }).appendTo("#planethumbs");
-                    $("#planecount").text(updates.length);
+                    if (0) {
+                        $("#planethumbs").children().sort(function(a,b){
+                            var plane_a = $(a).data('plane');
+                            var plane_b = $(b).data('plane');
+                            var dist_a = plane_a.distance===undefined?99999:(plane_a.inbound!==true?plane_a.distance+5000:plane_a.distance);
+                            var dist_b = plane_b.distance===undefined?99999:(plane_b.inbound!==true?plane_b.distance+5000:plane_b.distance);
+                            return dist_a-dist_b;
+                        }).appendTo("#planethumbs");
+                    }
                 }   
             }
             for (var hex in planes) {
@@ -115,6 +117,7 @@ $(document).ready(function() {
                     });
                 }
             }
+            updateStatistics();
         }.bind(this));
     },1000);
 });
