@@ -34,6 +34,8 @@
     background: #fff;
     font-family: helvetica neue;
     font-size:13px;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 #statistics > .pane {
@@ -96,7 +98,7 @@
     position: absolute;
     top: 0px;
     right: 0px;
-    width: 200px;
+    width: 220px;
     bottom: 236px;
     background: rgba(255,255,255,0.7);
     z-index: 100000;
@@ -112,7 +114,7 @@
     box-shadow: 3px 3px 5px #888;
     margin-bottom: 5px;
     background: #fff;
-    height: 120px;
+    height: 150px;
     overflow: hidden;
     border-left: 10px solid rgba(255,255,255,0);
 }
@@ -140,6 +142,15 @@
     background: #ccf;
 }
 
+.plane-entry .infotable
+{
+    border-spacing: 0px;
+    width: 100%;
+}
+.plane-entry .infotable td:last-child 
+{
+    text-align:right;
+}
 .plane-entry .icon
 {
     height: 13px;
@@ -149,25 +160,43 @@
 .plane-icao
 {
     color: #888;
-  float: right;
+    float: right;
+}
+
+.plane-airline 
+{
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: center;
+    display: inline-block;
+    width: 100%;
 }
 
 .plane-flight
 {
     font-size: 14px;
     font-style: italic;    
+    text-align: center;
+    display: inline-block;
+    width: 100%;
 }
 
 .plane-registration
 {
-  font-size: 15px;
-  font-weight: bold;  
+    font-size: 15px;
+    font-weight: bold;  
 }
 
 .plane-planetype
 {
     font-style: italic;
     font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    display: inline-block;
+    width: 100%;
 }
 
 .plane-led

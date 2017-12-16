@@ -680,7 +680,7 @@ char *trackToJson(char* hex, int *len) {
 char *aircraftsToJson(int *len) {
     time_t now = time(NULL);
     struct aircraft *a = Modes.aircrafts;
-    int buflen = 1024; // The initial buffer is incremented as needed
+    int buflen = 2048; // The initial buffer is incremented as needed
     char *buf = (char *) malloc(buflen), *p = buf;
     int l;
 
@@ -721,15 +721,19 @@ char *aircraftsToJson(int *len) {
             l = snprintf(p,buflen, ", \"reg\":\"%s\"",a->registration);
             p += l; buflen -= l;
         }
+        if (a->airline) {
+            l = snprintf(p,buflen, ", \"airline\":\"%s\"",a->airline);
+            p += l; buflen -= l;
+        }
 #endif
         l = snprintf(p,buflen, "},\n");
         p += l; buflen -= l;
                
  
         //Resize if needed
-        if (buflen < 256) {
+        if (buflen < 512) {
             int used = p-buf;
-            buflen += 1024; // Our increment.
+            buflen += 2048; // Our increment.
             buf = (char *) realloc(buf,used+buflen);
             p = buf+used;
         }

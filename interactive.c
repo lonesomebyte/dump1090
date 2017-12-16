@@ -150,6 +150,13 @@ int setBasestationInfo(void *ctxt, int argc, char **argv,
         else if (strcmp(azColName[i], "Registration")==0) {
             strncpy(a->registration, argv[i], sizeof(a->registration)-1);
         }
+        else if (strcmp(azColName[i], "RegisteredOwners")==0) {
+            if (a->airline) {
+                free(a->airline);
+            }
+            a->airline = malloc(strlen(argv[i])+1);
+            strcpy(a->airline, argv[i]);
+        }
     }
     
     return 0;
@@ -201,7 +208,7 @@ struct aircraft *interactiveCreateAircraft(struct modesMessage *mm) {
             sqlite3_close(db);
         }
         if (rc == SQLITE_OK) {
-            char *s = "SELECT Registration,ICAOTypeCode FROM Aircraft WHERE ModeS='";
+            char *s = "SELECT Registration,ICAOTypeCode,RegisteredOwners FROM Aircraft WHERE ModeS='";
             char *sql = malloc(strlen(s)+10); // max 8 chars for ModeS + "'" + "\0"
             snprintf(sql,strlen(s)+10,"%s%X'",s,a->addr);
             rc = sqlite3_exec(db, sql, setBasestationInfo, (void*)a, &err_msg);
@@ -632,6 +639,10 @@ void interactiveRemoveStaleAircrafts(void) {
                     pVector = a->path->next;
                     free(a->path);
                     a->path = pVector;
+                }
+                if (a->airline) {
+                    free(a->airline);
+                    a->airline = NULL;
                 }
                 // Remove the element from the linked list, with care
                 // if we are removing the first element

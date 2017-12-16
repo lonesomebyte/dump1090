@@ -51,26 +51,30 @@ function Plane(map, data) {
                 "<span class='plane-registration' id='registration'></span>"+
                 "<span class='plane-icao' id='hex'></span>"+
                 "<div><span class='plane-flight' id='flight'>---</span></div>"+
+                "<div><span class='plane-airline' id='airline'>&nbsp;<span></div>"+
                 "<div><span class='plane-planetype' id='planeType'>---</span></div>"+
-                "<div>"+
-                    "<img src='assets/images/altitude.png' class='icon'><span class='plane-altitude' id='altitude'>---</span> ft&nbsp&nbsp"+
-                    "<span class='plane-verticalspeed' id='vert_rate'>---</span> ft/min"+
-                "</div>"+
-                "<div>"+
-                    "<img src='assets/images/speed.png' class='icon'><span class='plane-velocity' id='speed'>---</span> kts&nbsp&nbsp"+
-                    "<img src='assets/images/heading.png' class='icon'><span class='plane-heading' id='track'>---</span>"+
-                "</div>"+
-                "<div>"+
-                    "<img src='assets/images/position.png' class='icon'><span class='plane-latitude' id='lat'>---</span> - "+
-                    "<span class='plane-longitude' id='lon'>---</span>"+
-                "</div>"+
-                "<div>"+
-                    "<img id='distanceicon' src='assets/images/distance.png' class='icon'><span class='plane-distance' id='distance'>---</span> km&nbsp&nbsp"+
-                    "<img src='assets/images/squawk.png' class='icon'><span class='plane-squawk' id='squawk'>---</span>"+
-                "</div>"+
+                "<table class='infotable'>"+
+                    "<tr>"+
+                        "<td><img src='assets/images/altitude.png' class='icon'><span class='plane-altitude' id='altitude'>---</span> ft</td>"+
+                        "<td><span class='plane-verticalspeed' id='vert_rate'>---</span> ft/min</td>"+
+                    "</tr>"+
+                    "<tr>"+
+                        "<td><img src='assets/images/speed.png' class='icon'><span class='plane-velocity' id='speed'>---</span> kts</td>"+
+                        "<td><img src='assets/images/heading.png' class='icon'><span class='plane-heading' id='track'>---</span></td>"+
+                    "</tr>"+
+                    "<tr>"+
+                        "<td><img src='assets/images/position.png' class='icon'><span class='plane-latitude' id='lat'>---</span></td>"+
+                        "<td><span class='plane-longitude' id='lon'>---</span></td>"+
+                    "</tr>"+
+                    "<tr>"+
+                        "<td><img id='distanceicon' src='assets/images/distance.png' class='icon'><span class='plane-distance' id='distance'>---</span></td>"+
+                        "<td><img src='assets/images/squawk.png' class='icon'><span class='plane-squawk' id='squawk'>---</span></td>"+
+                    "</tr>"+
+                "</table>"+
             "</div>"+
         "</div>").data("plane", this);
     this.hex = data.hex;
+    this.airline = data.airline;
     if (data.hex) {
         this.thumb.find("#hex").text(data.hex);
     }
@@ -79,6 +83,9 @@ function Plane(map, data) {
     }
     if (data.icao) {
         this.thumb.find("#planeType").text(data.icao in planeTypes?planeTypes[data.icao]:data.icao);	
+    }
+    if (data.airline) {
+        this.thumb.find("#airline").text(data.airline);	
     }
 }
 

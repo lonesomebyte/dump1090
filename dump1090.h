@@ -238,6 +238,7 @@ struct aircraft {
 #ifdef BASESTATION
     char          icaoType[5];
     char          registration[7];
+    char*         airline;
 #endif
 #ifdef LOGGING
     int           logId;

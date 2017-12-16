@@ -28,6 +28,7 @@ liveStatisticsProvider = {
         var types = [];
         var altitudes = [];
         var distances = [];
+        var airlines = [];
         var maxDistance = undefined;
         var minDistance = undefined;
         var maxAltitude = undefined;
@@ -49,12 +50,17 @@ liveStatisticsProvider = {
                 distance = (parseInt(distance / div)+1)*div;
                 distances.push(distance);
             }
+            airlines.push(planes[hex].airline);
         }
         altitudes = dictToArray(arrayToCount(altitudes),'altitude','count','altitude');
         distances = dictToArray(arrayToCount(distances),'distance','count','distance');
+        airlines = arrayToCount(airlines);
+        var airlineCount = Object.keys(airlines).length;
+        airlines = dictToArray(airlines,'airline','count','count');
         var statistics = {'planeTypes':{'total':Object.keys(planes).length, 'types':dictToArray(arrayToCount(types),'type','count', 'count')},
+                          'airlines':{'total':airlineCount, 'airlines':airlines},
                           'altitudes':{'highest':maxAltitude?maxAltitude:'---', 'lowest':minAltitude?minAltitude:'---', 'altitudes':altitudes},
-                          'distances':{'fartest':maxDistance?maxDistance:'---', 'closest':minDistance?minDistance:'---', 'distances':distances}};
+                          'distances':{'farthest':maxDistance?maxDistance:'---', 'closest':minDistance?minDistance:'---', 'distances':distances}};
         cb(statistics);
     }
 }
@@ -117,10 +123,17 @@ function showStatistics() {
                 case 'distances':
                     addPane(statistic, $(
                         "<div class='pane'>"+
-                            "<table class='centered'><tr><th class='big'>Fartest</th><th class='big'>Closest</th></tr><tr><td class='number big' data-field='fartest'></td><td class='number big' data-field='closest'></td></tr></table>"+
+                            "<table class='centered'><tr><th class='big'>Farthest</th><th class='big'>Closest</th></tr><tr><td class='number big' data-field='farthest'></td><td class='number big' data-field='closest'></td></tr></table>"+
                             "<table class='list' data-field='distances'><tr><th>#</th><th>Distance</th></tr><tr class='list-item'><td class='number' data-field='count'></td><td><span data-field='distance'></span> km</td></tr></table>"+
                         "</div>"));
                     break;
+                case 'airlines':
+                    addPane(statistic, $(
+                        "<div class='pane'>"+
+                            "<div class='title'><span class='number big' data-field='total'></span> airlines</div>"+
+                            "<table class='list' data-field='airlines'><tr class='list-item'><td class='number' data-field='count'></td> <td data-field='airline'></td></tr></table>"+
+                        "</div>"));
+                            
             }
         }
         refresh(statistics);
