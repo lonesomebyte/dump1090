@@ -52,13 +52,17 @@
     border-spacing: 0px;
 }
 
-#statistics table td:first-child {
+#statistics table#minmax td:last-child {
     text-align: right;
-    padding-right: 5px;
+    padding-left:20px;
 }
 
-#statistics table th {
+#statistics table th:first-child {
     text-align: left;
+}
+
+#statistics table th:last-child {
+    text-align: right;
 }
 
 #statistics table th.big,
@@ -92,6 +96,10 @@
 
 #statistics .number.big {
     font-size: 24px;
+}
+
+#statistics .number.medium {
+    font-size: 18px;
 }
 
 #planethumbs {

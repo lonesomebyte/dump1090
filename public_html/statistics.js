@@ -1,4 +1,4 @@
-
+var lastUpdate;
 function arrayToCount(arr) {
     var occurrences = {};
     for (var i = 0; i < arr.length; i++) {
@@ -26,10 +26,7 @@ function dictToArray(dict, keyName, valName, sort)
 liveStatisticsProvider = {
     fetch: function(cb) {
         var types = [];
-        var altitudes = [];
-        var distances = [];
         var airlines = [];
-        var speeds = [];
         var maxDistance = undefined;
         var minDistance = undefined;
         var maxAltitude = undefined;
@@ -48,29 +45,19 @@ liveStatisticsProvider = {
                 var altitude = parseInt(planes[hex].altitude);
                 if (maxAltitude===undefined || altitude>maxAltitude) {maxAltitude=altitude;} 
                 if (minAltitude===undefined || altitude<minAltitude) {minAltitude=altitude;} 
-                altitudes.push(parseInt((altitude+500)/1000)*1000);
             }
             if (!isNaN(planes[hex].distance)) {
                 var distance = parseInt(planes[hex].distance);
                 if (maxDistance===undefined || distance>maxDistance) {maxDistance=distance;} 
                 if (minDistance===undefined || distance<minDistance) {minDistance=distance;} 
-                var div = distance<100?20:50;
-                distance = (parseInt(distance / div)+1)*div;
-                distances.push(distance);
             }
             if (!isNaN(planes[hex].speed)) {
                 var speed = parseInt(planes[hex].speed);
                 if (maxSpeed===undefined || speed>maxSpeed) {maxSpeed=speed;} 
                 if (minSpeed===undefined || speed<minSpeed) {minSpeed=speed;} 
-                var div=40;
-                speed = (parseInt(speed / div)+1)*div;
-                speeds.push(speed);
             }
             airlines.push(planes[hex].airline);
         }
-        altitudes = dictToArray(arrayToCount(altitudes),'altitude','count','altitude');
-        distances = dictToArray(arrayToCount(distances),'distance','count','distance');
-        speeds = dictToArray(arrayToCount(speeds),'speed','count','speed');
         airlines = arrayToCount(airlines);
         var airlineCount = Object.keys(airlines).length;
         var airports = arrayToCount(airports);
@@ -78,9 +65,9 @@ liveStatisticsProvider = {
         var statistics = {'planeTypes':{'total':Object.keys(planes).length, 'types':dictToArray(arrayToCount(types),'type','count', 'count')},
                           'airlines':{'total':airlineCount, 'airlines':airlines},
                           'airports':{'total':Object.keys(airports).length, 'airports':dictToArray(airports,'airport','count','count')},
-                          'altitudes':{'highest':maxAltitude?maxAltitude:'---', 'lowest':minAltitude?minAltitude:'---', 'altitudes':altitudes},
-                          'distances':{'farthest':maxDistance?maxDistance:'---', 'closest':minDistance?minDistance:'---', 'distances':distances},
-                          'speeds':{'fastest':maxSpeed?maxSpeed:'---', 'slowest':minSpeed?minSpeed:'---', 'speeds':speeds}};
+                          'altitudes':{'highest':maxAltitude?maxAltitude:'---', 'lowest':minAltitude?minAltitude:'---'},
+                          'distances':{'farthest':maxDistance?maxDistance:'---', 'closest':minDistance?minDistance:'---'},
+                          'speeds':{'fastest':maxSpeed?maxSpeed:'---', 'slowest':minSpeed?minSpeed:'---'}};
         cb(statistics);
     }
 }
@@ -113,56 +100,54 @@ function refresh(statistics) {
 
     for (var statistic in statistics) {
         var data=statistics[statistic];
-        var pane=$("#statistics>#"+statistic);
+        var pane=$("#statistics .statisticElement#"+statistic);
         updateElement(pane, data);
     }
 }
 
 function showStatistics() {
-    function addPane(statistic, pane) {
-        $("#statistics").append(pane.attr('id',statistic));
+    function addElement(statistic, pane, parent) {
+        parent = parent || $("#statistics");
+        parent.append(pane.addClass("statisticElement").attr('id',statistic));
     }
+
+    $("#statistics>#minmax").remove();
+    $("#statistics").append($("<div class='pane'><table id='minmax'></table></div>"));
 
     statisticsProvider.fetch(function(statistics) {
         for (var statistic in statistics) {
             switch (statistic) {
                 case 'planeTypes':
-                    addPane(statistic, $(
+                    addElement(statistic, $(
                         "<div class='pane'>"+
                             "<div class='title'><span class='number big' data-field='total'></span> planes</div>"+
                             "<table class='list' data-field='types'><tr class='list-item'><td class='number' data-field='count'></td> <td data-field='type'></td></tr></table>"+
                         "</div>"));
                     break;
                 case 'airports':
-                    addPane(statistic, $(
+                    addElement(statistic, $(
                         "<div class='pane'>"+
                             "<div class='title'><span class='number big' data-field='total'></span> airports</div>"+
                             "<table class='list' data-field='airports'><tr class='list-item'><td class='number' data-field='count'></td> <td data-field='airport'></td></tr></table>"+
                         "</div>"));
                     break;
                 case 'altitudes':
-                    addPane(statistic, $(
-                        "<div class='pane'>"+
-                            "<table class='centered'><tr><th class='big'>Highest</th><th class='big'>Lowest</th></tr><tr><td class='number big' data-field='highest'></td><td class='number big' data-field='lowest'></td></tr></table>"+
-                            "<table class='list' data-field='altitudes'><tr><th>#</th><th>Altitude</th></tr><tr class='list-item'><td class='number' data-field='count'></td><td><span data-field='altitude'></span> ft</td></tr></table>"+
-                        "</div>"));
+                    addElement(statistic, $(
+                       "<tr><th>Highest</th><th>Lowest</th></tr><tr><td class='number medium'><span data-field='highest'>---</span>ft</td><td class='number medium'><span data-field='lowest'>---</span>ft</td></tr></table>"),
+                        $("#statistics #minmax"));
                     break;
                 case 'speeds':
-                    addPane(statistic, $(
-                        "<div class='pane'>"+
-                            "<table class='centered'><tr><th class='big'>Fastest</th><th class='big'>Slowest</th></tr><tr><td class='number big' data-field='fastest'></td><td class='number big' data-field='slowest'></td></tr></table>"+
-                            "<table class='list' data-field='speeds'><tr><th>#</th><th>Speed</th></tr><tr class='list-item'><td class='number' data-field='count'></td><td><span data-field='speed'></span> kts</td></tr></table>"+
-                        "</div>"));
+                    addElement(statistic, $(
+                        "<tr><th>Fastest</th><th>Slowest</th></tr><tr><td class='number medium'><span data-field='fastest'>---</span>kts</td><td class='number medium'><span data-field='slowest'>---</span>kts</td></tr></table>"),
+                        $("#statistics #minmax"));
                     break;
                 case 'distances':
-                    addPane(statistic, $(
-                        "<div class='pane'>"+
-                            "<table class='centered'><tr><th class='big'>Farthest</th><th class='big'>Closest</th></tr><tr><td class='number big' data-field='farthest'></td><td class='number big' data-field='closest'></td></tr></table>"+
-                            "<table class='list' data-field='distances'><tr><th>#</th><th>Distance</th></tr><tr class='list-item'><td class='number' data-field='count'></td><td><span data-field='distance'></span> km</td></tr></table>"+
-                        "</div>"));
+                    addElement(statistic, $(
+                        "<tr><th>Farthest</th><th>Closest</th></tr><tr><td class='number medium'><span data-field='farthest'>---</span>km</td><td class='number medium'><span data-field='closest'>---</span>km</td></tr></table>"),
+                        $("#statistics #minmax"));
                     break;
                 case 'airlines':
-                    addPane(statistic, $(
+                    addElement(statistic, $(
                         "<div class='pane'>"+
                             "<div class='title'><span class='number big' data-field='total'></span> airlines</div>"+
                             "<table class='list' data-field='airlines'><tr class='list-item'><td class='number' data-field='count'></td> <td data-field='airline'></td></tr></table>"+
@@ -175,6 +160,10 @@ function showStatistics() {
 }
 
 function updateStatistics() {
+    if (lastUpdate && new Date()-lastUpdate<10000) {
+        return;
+    }
+    lastUpdate = new Date();
     statisticsProvider.fetch(function(statistics) {
         refresh(statistics);
     });
