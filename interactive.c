@@ -161,6 +161,15 @@ int setBasestationInfo(void *ctxt, int argc, char **argv,
     
     return 0;
 }
+
+int setRoute(void *ctxt, int argc, char **argv, char **azColName) {
+    struct aircraft *a = (struct aircraft*)ctxt;
+    argc=argc;
+    azColName=azColName;
+    a->route=malloc(strlen(argv[0])+1);
+    strcpy(a->route,argv[0]);
+    return 0;
+}
 #endif
 
 //
@@ -219,8 +228,8 @@ struct aircraft *interactiveCreateAircraft(struct modesMessage *mm) {
             //fprintf(stderr, "SQL error: %s\n", err_msg);
 
             sqlite3_free(err_msg);
-            sqlite3_close(db);
         } 
+        sqlite3_close(db);
     }    
 #endif
 #ifdef LOGGING
@@ -368,6 +377,41 @@ struct aircraft *interactiveReceiveData(struct modesMessage *mm) {
 
     // If a (new) CALLSIGN has been received, copy it to the aircraft structure
     if (mm->bFlags & MODES_ACFLAGS_CALLSIGN_VALID) {
+#ifdef BASESTATION
+        if (strcmp(a->flight, mm->flight)!=0) {
+            sqlite3 *db;
+            char *err_msg = 0;
+            int rc = sqlite3_open("flightroute-iata.sqb", &db);
+            
+            if (rc != SQLITE_OK) {
+                
+                fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+                sqlite3_close(db);
+            }
+            if (rc == SQLITE_OK) {
+                char *s = "SELECT route FROM FlightRoute WHERE flight='";
+                int i;
+                for (i=sizeof(mm->flight)-1; i>=0; i--) {
+                    if ((mm->flight[i]==32) || (mm->flight[i]==0)) {
+                        mm->flight[i]=0;
+                    } else {
+                        break;
+                    }
+                }
+                char *sql = malloc(strlen(s)+strlen(mm->flight)+2);
+                snprintf(sql,strlen(s)+strlen(mm->flight)+2,"%s%s'",s,mm->flight);
+                rc = sqlite3_exec(db, sql, setRoute, (void*)a, &err_msg);
+                free(sql);
+            }
+            if (rc != SQLITE_OK ) {
+                //fprintf(stderr, "Failed to select data\n");
+                //fprintf(stderr, "SQL error: %s\n", err_msg);
+
+                sqlite3_free(err_msg);
+            } 
+            sqlite3_close(db);
+        }
+#endif
         memcpy(a->flight, mm->flight, sizeof(a->flight));
     }
 
@@ -513,7 +557,7 @@ void interactiveShowData(void) {
     if (Modes.interactive_rtl1090 == 0) {
 #ifdef BASESTATION
         printf (
-"  Hex     Mode  Sqwk  Icao  Reg     Flight   Alt    Spd  Hdg    Lat      Long   Sig  Msgs   Ti%c\n", progress);
+"  Hex     Mode  Sqwk  Icao  Reg     Flight   Route   Alt    Spd  Hdg    Lat      Long   Sig  Msgs   Ti%c\n", progress);
 #else
         printf (
 "  Hex     Mode  Sqwk  Flight   Alt    Spd  Hdg    Lat      Long   Sig  Msgs   Ti%c\n", progress);
@@ -523,7 +567,7 @@ void interactiveShowData(void) {
 "Hex    Flight   Alt      V/S GS  TT  SSR  G*456^ Msgs    Seen %c\n", progress);
     }
     printf(
-"-----------------------------------------------------------------------------------------------\n");
+"-------------------------------------------------------------------------------------------------------\n");
 
     while(a && (count < Modes.interactive_rows)) {
 
@@ -595,8 +639,8 @@ void interactiveShowData(void) {
                         snprintf(strFl, 6, "%5d", altitude);
                     }
 #ifdef BASESTATION
-                    printf("%c %06X  %-4s  %-4s  %-4s  %-6s  %-8s %5s  %3s  %3s  %7s %8s  %3d %5d   %2d\n",
-                    a->alarm && alarmIdx?'*':' ', a->addr, strMode, strSquawk, a->icaoType, a->registration, a->flight, strFl, strGs, strTt,
+                    printf("%c %06X  %-4s  %-4s  %-4s  %-6s  %-8s %7s %5s  %3s  %3s  %7s %8s  %3d %5d   %2d\n",
+                    a->alarm && alarmIdx?'*':' ', a->addr, strMode, strSquawk, a->icaoType, a->registration, a->flight, a->route?a->route:"", strFl, strGs, strTt,
                     strLat, strLon, signalAverage, msgs, (int)(now - a->seen));
 #else
                     printf("%c %06X  %-4s  %-4s  %-8s %5s  %3s  %3s  %7s %8s  %3d %5d   %2d\n",
@@ -642,7 +686,9 @@ void interactiveRemoveStaleAircrafts(void) {
                 }
                 if (a->airline) {
                     free(a->airline);
-                    a->airline = NULL;
+                }
+                if (a->route) {
+                    free(a->route);
                 }
                 // Remove the element from the linked list, with care
                 // if we are removing the first element

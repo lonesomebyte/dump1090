@@ -239,6 +239,7 @@ struct aircraft {
     char          icaoType[5];
     char          registration[7];
     char*         airline;
+    char*         route;
 #endif
 #ifdef LOGGING
     int           logId;

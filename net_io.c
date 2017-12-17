@@ -725,6 +725,10 @@ char *aircraftsToJson(int *len) {
             l = snprintf(p,buflen, ", \"airline\":\"%s\"",a->airline);
             p += l; buflen -= l;
         }
+        if (a->route) {
+            l = snprintf(p,buflen, ", \"route\":\"%s\"",a->route);
+            p += l; buflen -= l;
+        }
 #endif
         l = snprintf(p,buflen, "},\n");
         p += l; buflen -= l;

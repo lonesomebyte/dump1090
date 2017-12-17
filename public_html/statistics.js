@@ -36,9 +36,14 @@ liveStatisticsProvider = {
         var minAltitude = undefined;
         var maxSpeed = undefined;
         var minSpeed = undefined;
+        var airports = []
         for (var hex in planes) {
             var icao = planes[hex].icao;
             types.push(icao in planeTypes?planeTypes[icao]:icao);
+            if (planes[hex].routeTo) {
+                airports.push(planes[hex].routeTo);
+                airports.push(planes[hex].routeFrom);
+            }
             if (!isNaN(planes[hex].altitude)) {
                 var altitude = parseInt(planes[hex].altitude);
                 if (maxAltitude===undefined || altitude>maxAltitude) {maxAltitude=altitude;} 
@@ -68,9 +73,11 @@ liveStatisticsProvider = {
         speeds = dictToArray(arrayToCount(speeds),'speed','count','speed');
         airlines = arrayToCount(airlines);
         var airlineCount = Object.keys(airlines).length;
+        var airports = arrayToCount(airports);
         airlines = dictToArray(airlines,'airline','count','count');
         var statistics = {'planeTypes':{'total':Object.keys(planes).length, 'types':dictToArray(arrayToCount(types),'type','count', 'count')},
                           'airlines':{'total':airlineCount, 'airlines':airlines},
+                          'airports':{'total':Object.keys(airports).length, 'airports':dictToArray(airports,'airport','count','count')},
                           'altitudes':{'highest':maxAltitude?maxAltitude:'---', 'lowest':minAltitude?minAltitude:'---', 'altitudes':altitudes},
                           'distances':{'farthest':maxDistance?maxDistance:'---', 'closest':minDistance?minDistance:'---', 'distances':distances},
                           'speeds':{'fastest':maxSpeed?maxSpeed:'---', 'slowest':minSpeed?minSpeed:'---', 'speeds':speeds}};
@@ -124,6 +131,13 @@ function showStatistics() {
                         "<div class='pane'>"+
                             "<div class='title'><span class='number big' data-field='total'></span> planes</div>"+
                             "<table class='list' data-field='types'><tr class='list-item'><td class='number' data-field='count'></td> <td data-field='type'></td></tr></table>"+
+                        "</div>"));
+                    break;
+                case 'airports':
+                    addPane(statistic, $(
+                        "<div class='pane'>"+
+                            "<div class='title'><span class='number big' data-field='total'></span> airports</div>"+
+                            "<table class='list' data-field='airports'><tr class='list-item'><td class='number' data-field='count'></td> <td data-field='airport'></td></tr></table>"+
                         "</div>"));
                     break;
                 case 'altitudes':

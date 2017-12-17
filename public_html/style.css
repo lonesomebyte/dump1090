@@ -173,13 +173,28 @@
     width: 100%;
 }
 
+.plane-from
+{
+    float: left;
+}
+
+.plane-to
+{
+    float: right;
+}
+
+.plane-from img,
+.plane-to img
+{
+    height: 8px;
+}
+
 .plane-flight
 {
     font-size: 14px;
     font-style: italic;    
     text-align: center;
-    display: inline-block;
-    width: 100%;
+    display: block;
 }
 
 .plane-registration

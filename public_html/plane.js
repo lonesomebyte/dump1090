@@ -50,7 +50,11 @@ function Plane(map, data) {
                 "<span class='plane-led' id='led'>&#9679;</span>"+
                 "<span class='plane-registration' id='registration'></span>"+
                 "<span class='plane-icao' id='hex'></span>"+
-                "<div><span class='plane-flight' id='flight'>---</span></div>"+
+                "<div>"+
+                    "<span class='plane-from'><img src='assets/images/planefrom.png'><span id='from'></span></span>"+
+                    "<span class='plane-to'><span id='to'></span><img src='assets/images/planeto.png'></span>"+
+                    "<span class='plane-flight' id='flight'>---</span>"+
+                "</div>"+
                 "<div><span class='plane-airline' id='airline'>&nbsp;<span></div>"+
                 "<div><span class='plane-planetype' id='planeType'>---</span></div>"+
                 "<table class='infotable'>"+
@@ -272,6 +276,14 @@ Plane.prototype.Update = function(data) {
     if (data.squawk && this.squawk!=data.squawk) {
         this.squawk=data.squawk;
         this.thumb.find("#squawk").text(data.squawk);
+    }
+    if (data.route && this.route!=data.route) {
+        this.route = data.route;
+        var spl = this.route.split("-");
+        this.routeFrom = spl[0]
+        this.routeTo = spl[spl.length-1];
+        this.thumb.find("#from").text(this.routeFrom);
+        this.thumb.find("#to").text(this.routeTo);
     }
 }
 
