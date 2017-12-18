@@ -20,11 +20,34 @@ function readCookie(name) {
     }
     return null;
 }
+var selectedPlanes = [];
+function selectHandler(evt, planes) {
+    planes = planes || [this];
+    if (evt.originalEvent.altKey==false) {
+        for (var idx in selectedPlanes) {
+            selectedPlanes[idx].Select(false);
+        }
+        selectedPlanes = [];
+    }
+    var plane;
+    for (var idx=0; idx<planes.length; idx++) {
+        plane=planes[idx];
+        selectedPlanes.push(plane);
+        plane.Select(true);
+    }
+    // Make sure this thumb is visible, if not scroll
+    var thumb = plane.GetThumb();
+    var listview = thumb.parent();
+    var offset = thumb.position().top;
+    if ((offset<0) ||
+        (offset+thumb.height()>listview.height())) {
+        listview.scrollTop(listview.scrollTop()+offset);
+    }
+};
 
 $(document).ready(function() {
     var homeLat = readCookie("homeLat");
     var homeLon = readCookie("homeLon");
-    var selectedPlane = undefined;
     var setHome=false;
     
     var map = L.map('map').setView([0,0], 3);
@@ -66,7 +89,9 @@ $(document).ready(function() {
         setHome=true;
     });
 
-    showStatistics();
+    showStatistics(function(evt, meta) {
+        selectHandler(evt, meta['planes']);
+    });
     setInterval(function() {
         $.getJSON('/dump1090/data.json', function(updates) {
             var reportedPlanes = [];
@@ -78,23 +103,8 @@ $(document).ready(function() {
                         var plane = new Plane(map, update);
                         planes[update.hex] = plane;
                         $("#planethumbs").append(plane.GetThumb());
-                        var selectHandler = function(evt) {
-                            if (selectedPlane) {
-                                selectedPlane.Select(false);
-                            }   
-                            selectedPlane = this;
-                            this.Select(true);
-                            // Make sure this thumb is visible, if not scroll
-                            var thumb = selectedPlane.GetThumb();
-                            var listview = thumb.parent();
-                            var offset = thumb.position().top;
-                            if ((offset<0) ||
-                                (offset+thumb.height()>listview.height())) {
-                                    listview.scrollTop(listview.scrollTop()+offset);
-                            }
-                        }.bind(plane);
-                        plane.GetThumb().click(selectHandler);
-                        plane.Click(selectHandler);
+                        plane.GetThumb().click(selectHandler.bind(plane));
+                        plane.Click(selectHandler.bind(plane));
                     }   
                     planes[update.hex].Update(update, home);
                     //Sort the thumbs based on distance and inbound
@@ -115,6 +125,7 @@ $(document).ready(function() {
                     planes[hex].GetThumb().addClass('gone').on('transitionend webkitTransitionEnd oTransitionEnd', function(e) {
                         this.remove();
                     });
+                    delete planes[hex];
                 }
             }
             updateStatistics();

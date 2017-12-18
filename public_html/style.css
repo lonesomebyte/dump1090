@@ -7,6 +7,10 @@
     outline: none;
 }
 
+.clickable {
+    cursor: pointer;    
+}
+
 #infobar {
     position: absolute;
     height: 20px;
