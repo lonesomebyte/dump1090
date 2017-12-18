@@ -1,9 +1,0 @@
-# This file lists the conditions when an alarm is generated.
-# The different triggers are:
-# - icao: The plane will be marked when the icao contains the 
-#         given string
-# - registration: The plane will be marked when the registration
-#                 contains the given string
-squawk 7700
-squawk 7600
-icao a38
