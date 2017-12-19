@@ -166,6 +166,7 @@ Plane.prototype.Update = function(data) {
         this.alarm=data.alarm;
         if (this.alarm!=="0") {
             this.thumb.addClass('alarm');
+            this.thumb.prependTo(this.thumb.parent());
             var audio = new Audio("assets/sounds/notification.mp3");
             audio.play();
         } else {

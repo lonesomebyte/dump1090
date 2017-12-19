@@ -18,12 +18,17 @@
         <script src='main.js'></script>
     </head>
     <body>
-        <div id="map"></div>
-        <div id="infobar">
-            <span><span id="planecount">--</span> planes</span>&nbsp&nbsp&nbsp&nbsp&nbsp
-            <span id="homeinfo">Home: <span id="homeCoordinates"></span></span>
+        <div id='mainwindow' class='full'>
+            <div id="map"></div>
+            <div id="infobar">
+                <span><span id="planecount">--</span> planes</span>&nbsp&nbsp&nbsp&nbsp&nbsp
+                <span id="homeinfo">Home: <span id="homeCoordinates"></span></span>
+            </div>
+            <div id="planethumbs"></div>
+            <div id='menu'>
+                <img src='assets/images/statistics.png' id='statisticsButton' class='clickable'/>
+            </div>
         </div>
-        <div id="planethumbs"></div>
-        <div id="statistics"></div>
+        <div id="statistics" class='hidden'></div>
     </body>
 </html>

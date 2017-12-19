@@ -49,7 +49,6 @@ static MYSQL_RES* Database_Query(MYSQL* con, char* query) {
     MYSQL_RES *result = mysql_store_result(con);
     return result;
 }
-#if 0
 static void Database_ReadAlarms(void) {
     MYSQL* con = Database_Open();
     MYSQL_RES* result = Database_Query(con, "SELECT alarmType, alarmValue FROM alarms");
@@ -69,7 +68,6 @@ static void Database_ReadAlarms(void) {
     }   
     Database_Close(con);
 }
-#endif
 int Database_CheckAlarms(struct aircraft* aircraft) {
     struct alarm* alarm = alarms;
     while (alarm) {    
@@ -146,7 +144,7 @@ void Database_LogPath(struct aircraft* aircraft) {
 #endif
 
 void Database_Init(void) {
-    //Database_ReadAlarms();
+    Database_ReadAlarms();
 }
 
 int Database_InitNewDatabase(void) {

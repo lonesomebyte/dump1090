@@ -49,7 +49,8 @@ $(document).ready(function() {
     var homeLat = readCookie("homeLat");
     var homeLon = readCookie("homeLon");
     var setHome=false;
-    
+    var statisticsElement = $("#statistics");
+
     var map = L.map('map').setView([0,0], 3);
 
     if (homeLat===null || homeLon===null) {
@@ -92,6 +93,11 @@ $(document).ready(function() {
     showStatistics(function(evt, meta) {
         selectHandler(evt, meta['planes']);
     });
+
+    $("#statisticsButton").click(function() {
+        statisticsElement.toggleClass('hidden');
+        $("#mainwindow").toggleClass('full');
+    });
     setInterval(function() {
         $.getJSON('/dump1090/data.json', function(updates) {
             var reportedPlanes = [];
@@ -128,7 +134,9 @@ $(document).ready(function() {
                     delete planes[hex];
                 }
             }
-            updateStatistics();
+            if (!statisticsElement.hasClass('hidden')) {
+                updateStatistics();
+            }
         }.bind(this));
     },1000);
 });

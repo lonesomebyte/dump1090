@@ -29,7 +29,7 @@
 //
 #include "coaa.h"
 #include "dump1090.h"
-#include "settings.h"
+#include "database.h"
 //
 // ============================= Utility functions ==========================
 //
@@ -798,7 +798,7 @@ int main(int argc, char **argv) {
     if (Modes.interactive) {signal(SIGWINCH, sigWinchCallback);}
 #endif
 
-    settingsInit();
+    Database_Init();
 
     // Initialization
     modesInit();

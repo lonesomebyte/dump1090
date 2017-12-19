@@ -29,7 +29,6 @@
 //
 
 #include "dump1090.h"
-#include "settings.h"
 
 #ifdef BASESTATION
 #include <sqlite3.h>
@@ -518,7 +517,7 @@ struct aircraft *interactiveReceiveData(struct modesMessage *mm) {
         interactiveCreateDF(a,mm);
     }
     
-    a->alarm=settingsCheckAlarms(a);
+    a->alarm=Database_CheckAlarms(a);
 
     return (a);
 }
