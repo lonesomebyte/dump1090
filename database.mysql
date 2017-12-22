@@ -1,0 +1,88 @@
+-- MySQL dump 10.16  Distrib 10.1.23-MariaDB, for debian-linux-gnueabihf (armv7l)
+--
+-- Host: localhost    Database: dump1090
+-- ------------------------------------------------------
+-- Server version	10.1.23-MariaDB-9+deb9u1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Current Database: `dump1090`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `dump1090` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+
+USE `dump1090`;
+
+--
+-- Table structure for table `alarms`
+--
+
+DROP TABLE IF EXISTS `alarms`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `alarms` (
+  `alarmId` int(11) NOT NULL AUTO_INCREMENT,
+  `alarmType` enum('icao','registration','higher','lower','squawk') DEFAULT NULL,
+  `alarmValue` varchar(32) DEFAULT NULL,
+  `description` text,
+  PRIMARY KEY (`alarmId`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `logPathVectors`
+--
+
+DROP TABLE IF EXISTS `logPathVectors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `logPathVectors` (
+  `logPathVectorId` int(11) NOT NULL AUTO_INCREMENT,
+  `logId` int(11) DEFAULT NULL,
+  `lat` float DEFAULT NULL,
+  `lon` float DEFAULT NULL,
+  `altitude` int(11) DEFAULT NULL,
+  `speed` int(11) DEFAULT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`logPathVectorId`)
+) ENGINE=InnoDB AUTO_INCREMENT=1352544 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `logs`
+--
+
+DROP TABLE IF EXISTS `logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `logs` (
+  `logId` int(11) NOT NULL AUTO_INCREMENT,
+  `modeS` int(11) DEFAULT NULL,
+  `registration` varchar(6) DEFAULT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`logId`)
+) ENGINE=InnoDB AUTO_INCREMENT=44175 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+CREATE USER 'dump1090' IDENTIFIED BY 'highinthesky';
+GRANT ALL PRIVILEGES ON dump1090 . * TO 'dump1090'@'localhost' IDENTIFIED BY 'highinthesky';
+FLUSH PRIVILEGES;

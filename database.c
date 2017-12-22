@@ -62,7 +62,6 @@ static void Database_ReadAlarms(void) {
             strcpy(newAlarm->alarmType, row[0]);
             newAlarm->alarmValue = malloc(strlen(row[1])+1);
             strcpy(newAlarm->alarmValue, row[1]);
-            printf("Alarm: %s - %s\n", newAlarm->alarmType, newAlarm->alarmValue);
         } 
         mysql_free_result(result);
     }   

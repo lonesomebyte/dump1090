@@ -163,8 +163,8 @@ int setBasestationInfo(void *ctxt, int argc, char **argv,
 
 int setRoute(void *ctxt, int argc, char **argv, char **azColName) {
     struct aircraft *a = (struct aircraft*)ctxt;
-    argc=argc;
-    azColName=azColName;
+    (void)argc;
+    (void)azColName;
     a->route=malloc(strlen(argv[0])+1);
     strcpy(a->route,argv[0]);
     return 0;
@@ -211,8 +211,6 @@ struct aircraft *interactiveCreateAircraft(struct modesMessage *mm) {
         int rc = sqlite3_open("basestation.sqb", &db);
         
         if (rc != SQLITE_OK) {
-            
-            fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
             sqlite3_close(db);
         }
         if (rc == SQLITE_OK) {
@@ -223,9 +221,6 @@ struct aircraft *interactiveCreateAircraft(struct modesMessage *mm) {
             free(sql);
         }
         if (rc != SQLITE_OK ) {
-            //fprintf(stderr, "Failed to select data\n");
-            //fprintf(stderr, "SQL error: %s\n", err_msg);
-
             sqlite3_free(err_msg);
         } 
         sqlite3_close(db);
@@ -383,8 +378,6 @@ struct aircraft *interactiveReceiveData(struct modesMessage *mm) {
             int rc = sqlite3_open("flightroute-iata.sqb", &db);
             
             if (rc != SQLITE_OK) {
-                
-                fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
                 sqlite3_close(db);
             }
             if (rc == SQLITE_OK) {
@@ -403,9 +396,6 @@ struct aircraft *interactiveReceiveData(struct modesMessage *mm) {
                 free(sql);
             }
             if (rc != SQLITE_OK ) {
-                //fprintf(stderr, "Failed to select data\n");
-                //fprintf(stderr, "SQL error: %s\n", err_msg);
-
                 sqlite3_free(err_msg);
             } 
             sqlite3_close(db);

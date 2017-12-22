@@ -2,7 +2,7 @@
 #define DATABASE_H_
 
 #include "dump1090.h"
-#include <mysql/mysql.h>
+#include <mysql.h>
 
 void Database_Init(void);
 
